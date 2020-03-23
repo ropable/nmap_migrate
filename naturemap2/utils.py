@@ -29,32 +29,14 @@ def import_nmap_data():
                 update_frequency=source.sou_update_frequency,
                 dataset_version=source.sou_dataset_version,
                 version_comments=source.sou_version_comments,
-                display_in_directory_ind=source.sou_display_in_directory_ind,
-                vouchered_ind=source.sou_vouchered_ind,
+                display_in_directory=source.sou_display_in_directory_ind == 'Y',
+                vouchered=source.sou_vouchered_ind == 'Y',
                 core_dataset_ind=source.sou_core_dataset_ind,
                 source_species_id_desc=source.sou_source_species_id_desc,
-                full_search_ind=source.sou_full_search_ind,
+                full_search=source.sou_full_search_ind == 'Y',
             ))
     print('Creating {} Source objects'.format(len(create_list)))
     Source.objects.bulk_create(create_list)
-
-    # Bulk create Sites in batches of 1000.
-    total = Nmpsites.objects.count()
-    for i in range(0, total, 1000):
-        print('Querying features {} to {} of {}'.format(i, i + 1000, total))
-        create_list = []
-        for site in Nmpsites.objects.order_by('sit_id')[i:i + 1000]:
-            if not Site.objects.filter(legacy_pk=site.sit_id).exists():
-                create_list.append(Site(
-                    name=site.sit_name,
-                    source=Source.objects.get(code=site.sit_sou_code_id),
-                    source_site=site.sit_source_site,
-                    point=Point((site.sit_longitude, site.sit_latitude), srid=4283),
-                    accuracy=site.sit_accuracy,
-                    legacy_pk=site.sit_id,
-                ))
-        print('Creating {} Site objects'.format(len(create_list)))
-        Site.objects.bulk_create(create_list)
 
     # Bulk create Kingdoms
     create_list = []
@@ -117,17 +99,35 @@ def import_nmap_data():
                     infraspecies_name=sp.spn_infrasp_name,
                     author=sp.spn_author,
                     informal=sp.spn_informal,
-                    naturalised_flag=sp.spn_naturalised_flag,
+                    naturalised=sp.spn_naturalised_flag == 'Y',
                     vernacular=sp.spn_vernacular,
-                    currency_ind=sp.spn_currency_ind,
+                    currency=sp.spn_currency_ind == 'Y',
                     consv_code=sp.spn_consv_code,
-                    auth_name_ind=sp.spn_auth_name_ind,
+                    auth_name=sp.spn_auth_name_ind == 'Y',
                     name_id=sp.spn_name_id,
                     ranking=sp.spn_ranking,
                     legacy_pk=sp.spn_id,
                 ))
         print('Creating {} Species objects'.format(len(create_list)))
         Species.objects.bulk_create(create_list)
+
+    # Bulk create Sites in batches of 1000.
+    total = Nmpsites.objects.count()
+    for i in range(0, total, 1000):
+        print('Querying features {} to {} of {}'.format(i, i + 1000, total))
+        create_list = []
+        for site in Nmpsites.objects.order_by('sit_id')[i:i + 1000]:
+            if not Site.objects.filter(legacy_pk=site.sit_id).exists():
+                create_list.append(Site(
+                    name=site.sit_name,
+                    source=Source.objects.get(code=site.sit_sou_code_id),
+                    source_site=site.sit_source_site,
+                    point=Point((site.sit_longitude, site.sit_latitude), srid=4283),
+                    accuracy=site.sit_accuracy,
+                    legacy_pk=site.sit_id,
+                ))
+        print('Creating {} Site objects'.format(len(create_list)))
+        Site.objects.bulk_create(create_list)
 
     # Bulk create SpeciesLocation in batches of 1000.
     total = Nmpspecies.objects.count()
@@ -149,7 +149,7 @@ def import_nmap_data():
                     stt_id=sp.spe_stt_id,
                     status_date=sp.spe_status_date,
                     status_comments=sp.spe_status_comments,
-                    hide_ind=sp.spe_hide_ind,
+                    hide=sp.spe_hide_ind == 'Y',
                     legacy_pk=sp.objectid,
                 ))
         print('Creating {} SpeciesLocation objects'.format(len(create_list)))
