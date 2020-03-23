@@ -31,7 +31,7 @@ def import_nmap_data():
                 version_comments=source.sou_version_comments,
                 display_in_directory=source.sou_display_in_directory_ind == 'Y',
                 vouchered=source.sou_vouchered_ind == 'Y',
-                core_dataset_ind=source.sou_core_dataset_ind,
+                core_dataset=source.sou_core_dataset_ind == 'Y',
                 source_species_id_desc=source.sou_source_species_id_desc,
                 full_search=source.sou_full_search_ind == 'Y',
             ))
