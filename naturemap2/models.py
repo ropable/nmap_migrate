@@ -19,11 +19,11 @@ class Source(models.Model):
     dataset_version = models.CharField(max_length=64, blank=True, null=True)
     version_comments = models.TextField(blank=True, null=True)
     # Cryptic fields:
-    display_in_directory_ind = models.CharField(max_length=1, blank=True, null=True)
-    vouchered_ind = models.CharField(max_length=1, blank=True, null=True)
+    display_in_directory = models.NullBooleanField(default=None)
+    vouchered = models.NullBooleanField(default=None)
     core_dataset_ind = models.CharField(max_length=1, blank=True, null=True)
     source_species_id_desc = models.CharField(max_length=128, blank=True, null=True)
-    full_search_ind = models.CharField(max_length=1)
+    full_search = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -93,11 +93,11 @@ class Species(models.Model):
     author = models.CharField(max_length=512, blank=True, null=True)
     vernacular = models.CharField(max_length=256, blank=True, null=True)
     # Cryptic fields:
-    currency_ind = models.CharField(max_length=1)
+    currency = models.BooleanField(default=True)  # 95% sure this is 'current name'.
     informal = models.CharField(max_length=2, blank=True, null=True)
-    naturalised_flag = models.CharField(max_length=1, blank=True, null=True)
+    naturalised = models.NullBooleanField(default=None)
     consv_code = models.CharField(max_length=4, blank=True, null=True)
-    auth_name_ind = models.CharField(max_length=1, blank=True, null=True)
+    auth_name = models.NullBooleanField(default=None)
     name_id = models.IntegerField(blank=True, null=True)
     ranking = models.CharField(max_length=8, blank=True, null=True)
     legacy_pk = models.IntegerField(unique=True)
@@ -125,7 +125,7 @@ class SpeciesLocation(models.Model):
     stt_id = models.IntegerField(blank=True, null=True)
     status_date = models.DateField(blank=True, null=True)
     status_comments = models.CharField(max_length=512, blank=True, null=True)
-    hide_ind = models.CharField(max_length=1, blank=True, null=True)
+    hide = models.NullBooleanField(default=None)
     legacy_pk = models.BigIntegerField(unique=True)
 
     def __str__(self):
