@@ -21,7 +21,6 @@ class Source(models.Model):
     # Cryptic fields:
     display_in_directory = models.NullBooleanField(default=None)
     vouchered = models.NullBooleanField(default=None)
-    core_dataset_ind = models.CharField(max_length=1, blank=True, null=True)  # TODO: delete this field.
     core_dataset = models.NullBooleanField(default=None)
     source_species_id_desc = models.CharField(max_length=128, blank=True, null=True)
     full_search = models.BooleanField(default=True)
