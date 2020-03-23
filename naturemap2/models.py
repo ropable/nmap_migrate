@@ -60,6 +60,9 @@ class Family(models.Model):
     sup_code = models.CharField(max_length=16)
     source = models.ForeignKey(Source, on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name_plural = 'families'
+
     def __str__(self):
         return self.name
 
@@ -72,7 +75,7 @@ class Supra(models.Model):
     name = models.CharField(max_length=256, blank=True, null=True)
 
     def __str__(self):
-        return self.sup_name
+        return self.name
 
 
 class Species(models.Model):
@@ -98,6 +101,9 @@ class Species(models.Model):
     name_id = models.IntegerField(blank=True, null=True)
     ranking = models.CharField(max_length=8, blank=True, null=True)
     legacy_pk = models.IntegerField(unique=True)
+
+    class Meta:
+        verbose_name_plural = 'species'
 
     def __str__(self):
         return self.name
