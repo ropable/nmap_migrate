@@ -31,7 +31,7 @@ class Source(models.Model):
 
 class Site(models.Model):
     name = models.CharField(max_length=512, blank=True, null=True)
-    source = models.ForeignKey(Source, on_delete=models.DO_NOTHING)
+    source = models.ForeignKey(Source, on_delete=models.PROTECT)
     source_site = models.CharField(max_length=128, blank=True, null=True)
     point = models.PointField(srid=4283)
     accuracy = models.IntegerField(blank=True, null=True)
