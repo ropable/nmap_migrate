@@ -40,8 +40,8 @@ class SupraAdmin(admin.ModelAdmin):
 
 @admin.register(Species)
 class SpeciesAdmin(admin.ModelAdmin):
-    list_display = ('name', 'kingdom', 'family', 'supra', 'author')
-    list_filter = ('kingdom', 'supra')
+    list_display = ('name', 'kingdom', 'family', 'supra', 'author', 'currency')
+    list_filter = ('kingdom', 'supra', 'currency')
     raw_id_fields = ('family',)
     readonly_fields = ('legacy_pk',)
     search_fields = ('name', 'author', 'vernacular')
@@ -50,7 +50,8 @@ class SpeciesAdmin(admin.ModelAdmin):
 @admin.register(SpeciesLocation)
 class SpeciesLocationAdmin(admin.ModelAdmin):
     date_hierarchy = 'query_date'
-    list_display = ('species', 'site', 'collector', 'query_date')
+    list_display = ('species', 'site', 'collector', 'query_date', 'hide')
+    list_filter = ('hide',)
     raw_id_fields = ('species', 'site')
     readonly_fields = ('legacy_pk',)
     search_fields = ('species__name', 'site__name', 'collector', 'survey')
