@@ -29,19 +29,10 @@ class Source(models.Model):
         return self.title
 
 
-class Site(models.Model):
-    name = models.CharField(max_length=512, blank=True, null=True)
-    source = models.ForeignKey(Source, on_delete=models.PROTECT)
-    source_site = models.CharField(max_length=128, blank=True, null=True)
-    point = models.PointField(srid=4283)
-    accuracy = models.IntegerField(blank=True, null=True)
-    legacy_pk = models.IntegerField(unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Kingdom(models.Model):
+    """
+    TODO: merge this into Family.
+    """
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=256, blank=True, null=True)
     legacy_pk = models.IntegerField(unique=True)
@@ -51,9 +42,14 @@ class Kingdom(models.Model):
 
 
 class Family(models.Model):
+    """
+    TODO: rename this model.
+    """
     # `name` is the legacy PK.
     name = models.CharField(max_length=64)
     kingdom = models.ForeignKey(Kingdom, on_delete=models.PROTECT)
+    kingdom_name = models.CharField(max_length=64, blank=True, null=True)
+    kingdom_description = models.CharField(max_length=256, blank=True, null=True)
     division = models.CharField(max_length=64, blank=True, null=True)
     order = models.CharField(max_length=64, blank=True, null=True)
     classname = models.CharField(max_length=64, blank=True, null=True)
@@ -69,6 +65,7 @@ class Family(models.Model):
 
 class Supra(models.Model):
     """Seems to be a general 'common use' division.
+    TODO: merge this into Species.
     """
     # `code` is the legacy PK.
     code = models.CharField(unique=True, max_length=32)
@@ -86,6 +83,8 @@ class Species(models.Model):
     kingdom = models.ForeignKey(Kingdom, on_delete=models.PROTECT)
     family = models.ForeignKey(Family, on_delete=models.PROTECT)
     supra = models.ForeignKey(Supra, on_delete=models.PROTECT)
+    supra_code = models.CharField(max_length=32, db_index=True, blank=True, null=True)
+    supra_name = models.CharField(max_length=256, blank=True, null=True)
     genus = models.CharField(max_length=128)
     species = models.CharField(max_length=128)
     infraspecies_rank = models.CharField(max_length=64, blank=True, null=True)
@@ -109,17 +108,37 @@ class Species(models.Model):
         return self.name
 
 
+class Site(models.Model):
+    """
+    TODO: merge this into SpeciesLocation.
+    """
+    name = models.CharField(max_length=512, blank=True, null=True)
+    source = models.ForeignKey(Source, on_delete=models.PROTECT)
+    source_site = models.CharField(max_length=128, blank=True, null=True)
+    point = models.PointField(srid=4283)
+    accuracy = models.IntegerField(blank=True, null=True)
+    legacy_pk = models.IntegerField(unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class SpeciesLocation(models.Model):
     """95% sure that this is "in the world" observations of each species.
+    TODO: add a document field for full text search indexing.
     """
     identifier = models.IntegerField(unique=True, blank=True, null=True)
     species = models.ForeignKey(Species, on_delete=models.PROTECT)
     query_date = models.DateField(blank=True, null=True)
-    site = models.ForeignKey(Site, on_delete=models.PROTECT, blank=True, null=True)
+    # Site fields
+    site = models.ForeignKey(Site, on_delete=models.PROTECT, blank=True, null=True)  # TODO: remove
+    site_name = models.CharField(max_length=512, blank=True, null=True)
+    site_source = models.ForeignKey(Source, blank=True, null=True, on_delete=models.PROTECT)
     collector = models.CharField(max_length=128, blank=True, null=True)
     collector_no = models.CharField(max_length=64, blank=True, null=True)
     survey = models.CharField(max_length=128, blank=True, null=True)
     point = models.PointField(srid=4283)
+    accuracy = models.IntegerField(blank=True, null=True)
     # Cryptic fields:
     cust_group = models.CharField(max_length=32, blank=True, null=True)
     stt_id = models.IntegerField(blank=True, null=True)

@@ -57,9 +57,12 @@ def import_nmap_data():
         create_list = []
         for fam in Nmpfamilies.objects.order_by('fam_name')[i:i + 1000]:
             if not Family.objects.filter(name=fam.fam_name).exists():
+                kingdom = Kingdom.objects.get(legacy_pk=fam.fam_kin_id)
                 create_list.append(Family(
                     name=fam.fam_name,
-                    kingdom=Kingdom.objects.get(legacy_pk=fam.fam_kin_id),
+                    kingdom=kingdom,
+                    kingdom_name=kingdom.name,
+                    kingdom_description=kingdom.description,
                     division=fam.fam_division,
                     order=fam.fam_order,
                     classname=fam.fam_class,
@@ -87,12 +90,15 @@ def import_nmap_data():
         create_list = []
         for sp in Nmpspeciesnames.objects.order_by('spn_id')[i:i + 1000]:
             if not Species.objects.filter(legacy_pk=sp.spn_id).exists():
+                supra = Supra.objects.get(code=sp.spn_sup_code_id)
                 create_list.append(Species(
                     name=sp.spn_name,
                     source=Source.objects.get(code=sp.spn_sou_code_id),
                     kingdom=Kingdom.objects.get(legacy_pk=sp.spn_kin_id),
                     family=Family.objects.get(name=sp.spn_fam_name_id),
-                    supra=Supra.objects.get(code=sp.spn_sup_code_id),
+                    supra=supra,
+                    supra_code=supra.code,
+                    supra_name=supra.name,
                     genus=sp.spn_genus,
                     species=sp.spn_species,
                     infraspecies_rank=sp.spn_infrasp_rank,
@@ -136,11 +142,14 @@ def import_nmap_data():
         create_list = []
         for sp in Nmpspecies.objects.order_by('objectid')[i:i + 1000]:
             if not SpeciesLocation.objects.filter(legacy_pk=sp.objectid).exists():
+                site = Site.objects.get(legacy_pk=sp.spe_sit_id)
                 create_list.append(SpeciesLocation(
                     identifier=sp.spe_id,
                     species=Species.objects.get(legacy_pk=sp.spe_spn_id),
                     query_date=sp.spe_query_date,
-                    site=Site.objects.get(legacy_pk=sp.spe_sit_id),
+                    site=site,
+                    site_name=site.name,
+                    site_source=site.source,
                     collector=sp.spe_collector,
                     collector_no=sp.spe_collector_no,
                     survey=sp.spe_survey,
