@@ -1,7 +1,9 @@
 # nmpspecies data migrator
 
 A minimal Django project to migrate data from the Department's NMAP.NMPSPECIES
-Oracle database to a new PostgreSQL home.
+Oracle database to a new PostgreSQL home. This project is only required to
+migrate the data, after which time the `naturemap` application will be moved to
+a newer project environment.
 
 # Migrating data from Oracle to PostgreSQL
 

@@ -80,7 +80,7 @@ class Species(models.Model):
     """
     name = models.CharField(max_length=256)
     source = models.ForeignKey(Source, on_delete=models.PROTECT)
-    kingdom = models.ForeignKey(Kingdom, on_delete=models.PROTECT)
+    kingdom = models.ForeignKey(Kingdom, on_delete=models.PROTECT)  # TODO: remove
     family = models.ForeignKey(Family, on_delete=models.PROTECT)
     supra = models.ForeignKey(Supra, on_delete=models.PROTECT)
     supra_code = models.CharField(max_length=32, db_index=True, blank=True, null=True)
