@@ -140,7 +140,7 @@ def import_nmap_data():
         for sp in Nmpspecies.objects.order_by('objectid')[i:i + 1000]:
             if not SpeciesLocation.objects.filter(legacy_pk=sp.objectid).exists():
                 site = Site.objects.get(legacy_pk=sp.spe_sit_id)
-                create_list.append(SpeciesLocation(
+                spl = SpeciesLocation(
                     identifier=sp.spe_id,
                     species=Species.objects.get(legacy_pk=sp.spe_spn_id),
                     query_date=sp.spe_query_date,
@@ -156,6 +156,8 @@ def import_nmap_data():
                     status_comments=sp.spe_status_comments,
                     hide=sp.spe_hide_ind == 'Y',
                     legacy_pk=sp.objectid,
-                ))
+                )
+                spl.document = spl.get_document()
+                create_list.append(spl)
         print('Creating {} SpeciesLocation objects'.format(len(create_list)))
         SpeciesLocation.objects.bulk_create(create_list)
