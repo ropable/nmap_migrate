@@ -26,9 +26,9 @@ class KingdomAdmin(admin.ModelAdmin):
 
 @admin.register(Family)
 class FamilyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'kingdom', 'division', 'order', 'classname')
+    list_display = ('name', 'order', 'class_name', 'division', 'kingdom_name', 'sup_code')
     readonly_fields = ('name',)
-    search_fields = ('name', 'kingdom__name', 'division', 'order', 'classname')
+    search_fields = ('name', 'order', 'class_name', 'division', 'kingdom_name', 'sup_code')
 
 
 @admin.register(Supra)
@@ -40,8 +40,8 @@ class SupraAdmin(admin.ModelAdmin):
 
 @admin.register(Species)
 class SpeciesAdmin(admin.ModelAdmin):
-    list_display = ('name', 'kingdom', 'family', 'supra', 'author', 'currency')
-    list_filter = ('kingdom', 'supra', 'currency')
+    list_display = ('name', 'family', 'supra_code', 'vernacular', 'currency', 'consv_code')
+    list_filter = ('supra_code', 'currency', 'consv_code')
     raw_id_fields = ('family',)
     readonly_fields = ('legacy_pk',)
     search_fields = ('name', 'author', 'vernacular')
@@ -50,8 +50,8 @@ class SpeciesAdmin(admin.ModelAdmin):
 @admin.register(SpeciesLocation)
 class SpeciesLocationAdmin(admin.ModelAdmin):
     date_hierarchy = 'query_date'
-    list_display = ('species', 'site', 'collector', 'query_date', 'hide')
+    list_display = ('name', 'site_name', 'collector', 'query_date', 'hide')
     list_filter = ('hide',)
-    raw_id_fields = ('species', 'site')
+    raw_id_fields = ('species',)
     readonly_fields = ('legacy_pk',)
-    search_fields = ('species__name', 'site__name', 'collector', 'survey')
+    search_fields = ('name', 'site_name', 'collector', 'survey')

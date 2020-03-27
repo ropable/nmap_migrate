@@ -60,12 +60,11 @@ def import_nmap_data():
                 kingdom = Kingdom.objects.get(legacy_pk=fam.fam_kin_id)
                 create_list.append(Family(
                     name=fam.fam_name,
-                    kingdom=kingdom,
                     kingdom_name=kingdom.name,
                     kingdom_description=kingdom.description,
                     division=fam.fam_division,
                     order=fam.fam_order,
-                    classname=fam.fam_class,
+                    class_name=fam.fam_class,
                     sup_code=fam.fam_sup_code,
                     source=Source.objects.get(code=fam.fam_sou_code_id),
                 ))
@@ -94,9 +93,7 @@ def import_nmap_data():
                 create_list.append(Species(
                     name=sp.spn_name,
                     source=Source.objects.get(code=sp.spn_sou_code_id),
-                    kingdom=Kingdom.objects.get(legacy_pk=sp.spn_kin_id),
                     family=Family.objects.get(name=sp.spn_fam_name_id),
-                    supra=supra,
                     supra_code=supra.code,
                     supra_name=supra.name,
                     genus=sp.spn_genus,
@@ -147,7 +144,6 @@ def import_nmap_data():
                     identifier=sp.spe_id,
                     species=Species.objects.get(legacy_pk=sp.spe_spn_id),
                     query_date=sp.spe_query_date,
-                    site=site,
                     site_name=site.name,
                     site_source=site.source,
                     collector=sp.spe_collector,

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import JSONField
+from django.template import Context, Template
 
 
 class Source(models.Model):
@@ -31,7 +33,7 @@ class Source(models.Model):
 
 class Kingdom(models.Model):
     """
-    TODO: merge this into Family.
+    This model is deprecated (data merged into Family).
     """
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=256, blank=True, null=True)
@@ -43,16 +45,15 @@ class Kingdom(models.Model):
 
 class Family(models.Model):
     """
-    TODO: rename this model.
+    TODO: rename this model to something like Taxon.
     """
     # `name` is the legacy PK.
     name = models.CharField(max_length=64)
-    kingdom = models.ForeignKey(Kingdom, on_delete=models.PROTECT)
+    order = models.CharField(max_length=64, blank=True, null=True)
+    class_name = models.CharField(max_length=64, blank=True, null=True)
+    division = models.CharField(max_length=64, blank=True, null=True)  # Equivalent to phylum.
     kingdom_name = models.CharField(max_length=64, blank=True, null=True)
     kingdom_description = models.CharField(max_length=256, blank=True, null=True)
-    division = models.CharField(max_length=64, blank=True, null=True)
-    order = models.CharField(max_length=64, blank=True, null=True)
-    classname = models.CharField(max_length=64, blank=True, null=True)
     sup_code = models.CharField(max_length=16)
     source = models.ForeignKey(Source, on_delete=models.PROTECT)
 
@@ -64,8 +65,8 @@ class Family(models.Model):
 
 
 class Supra(models.Model):
-    """Seems to be a general 'common use' division.
-    TODO: merge this into Species.
+    """
+    This model is deprecated (data merged into Species).
     """
     # `code` is the legacy PK.
     code = models.CharField(unique=True, max_length=32)
@@ -80,9 +81,7 @@ class Species(models.Model):
     """
     name = models.CharField(max_length=256)
     source = models.ForeignKey(Source, on_delete=models.PROTECT)
-    kingdom = models.ForeignKey(Kingdom, on_delete=models.PROTECT)  # TODO: remove
     family = models.ForeignKey(Family, on_delete=models.PROTECT)
-    supra = models.ForeignKey(Supra, on_delete=models.PROTECT)
     supra_code = models.CharField(max_length=32, db_index=True, blank=True, null=True)
     supra_name = models.CharField(max_length=256, blank=True, null=True)
     genus = models.CharField(max_length=128)
@@ -110,7 +109,7 @@ class Species(models.Model):
 
 class Site(models.Model):
     """
-    TODO: merge this into SpeciesLocation.
+    This model is deprecated (data merged into SpeciesLocation).
     """
     name = models.CharField(max_length=512, blank=True, null=True)
     source = models.ForeignKey(Source, on_delete=models.PROTECT)
@@ -125,13 +124,12 @@ class Site(models.Model):
 
 class SpeciesLocation(models.Model):
     """95% sure that this is "in the world" observations of each species.
-    TODO: add a document field for full text search indexing.
     """
     identifier = models.IntegerField(unique=True, blank=True, null=True)
     species = models.ForeignKey(Species, on_delete=models.PROTECT)
+    name = models.CharField(max_length=512, blank=True, null=True)
     query_date = models.DateField(blank=True, null=True)
     # Site fields
-    site = models.ForeignKey(Site, on_delete=models.PROTECT, blank=True, null=True)  # TODO: remove
     site_name = models.CharField(max_length=512, blank=True, null=True)
     site_source = models.ForeignKey(Source, blank=True, null=True, on_delete=models.PROTECT)
     collector = models.CharField(max_length=128, blank=True, null=True)
@@ -146,6 +144,24 @@ class SpeciesLocation(models.Model):
     status_comments = models.CharField(max_length=512, blank=True, null=True)
     hide = models.NullBooleanField(default=None)
     legacy_pk = models.BigIntegerField(unique=True)
+    document = models.TextField(blank=True, null=True)  # Used for full-text search indexing.
+    data = JSONField(default=dict)
 
     def __str__(self):
-        return self.species.name
+        return self.name
+
+    def get_document(self):
+        # Render the document field value from a template.
+        f = """{{ object.name }}
+{{ species.family.name }}
+{{ species.family.order }}
+{{ species.family.class_name }}
+{{ species.family.division }}
+{{ species.family.kingdom_name }}
+{% if species.vernacular %}{{ species.vernacular }}{% endif %}
+{% if object.site_name %}{{ object.site_name }}{% endif %}
+{% if object.collector %}{{ object.collector }}{% endif %}
+"""
+        template = Template(f)
+        context = Context({'object': self, 'species': self.species})
+        return template.render(context).strip()
