@@ -158,6 +158,22 @@ def import_nmap_data():
                     legacy_pk=sp.objectid,
                 )
                 spl.document = spl.get_document()
+                d = {
+                    'species': spl.species.species,
+                    'genus': spl.species.genus,
+                    'family': spl.species.family.name
+                }
+                if spl.species.family.order:
+                    d['order'] = spl.species.family.order
+                if spl.species.family.class_name:
+                    d['class'] = spl.species.family.class_name
+                if spl.species.family.division:
+                    d['division'] = spl.species.family.division
+                if spl.species.family.kingdom_name:
+                    d['kingdom'] = spl.species.family.kingdom_name
+                if spl.species.consv_code:
+                    d['consv_code'] = spl.species.consv_code
+                spl.metadata = d
                 create_list.append(spl)
         print('Creating {} SpeciesLocation objects'.format(len(create_list)))
         SpeciesLocation.objects.bulk_create(create_list)

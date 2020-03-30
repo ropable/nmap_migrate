@@ -145,7 +145,7 @@ class SpeciesLocation(models.Model):
     hide = models.NullBooleanField(default=None)
     legacy_pk = models.BigIntegerField(unique=True)
     document = models.TextField(blank=True, null=True)  # Used for full-text search indexing.
-    data = JSONField(default=dict)
+    metadata = JSONField(default=dict)
 
     def __str__(self):
         return self.name
