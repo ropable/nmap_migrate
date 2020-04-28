@@ -1,9 +1,8 @@
 import dj_database_url
-from nmap.utils import env
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = env('SECRET_KEY', 'PlaceholderSecretKey')
+SECRET_KEY = os.getenv('SECRET_KEY', 'PlaceholderSecretKey')
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
@@ -55,9 +54,9 @@ DATABASES = {
     'default': dj_database_url.config(),
     'nmpspecies_db': {
         'ENGINE': 'django.db.backends.oracle',
-        'USER': env('ORACLE_USERNAME', ''),
-        'PASSWORD': env('ORACLE_PASSWORD', ''),
-        'NAME': env('ORACLE_DESCRIPTOR', ''),
+        'USER': os.getenv('ORACLE_USERNAME', ''),
+        'PASSWORD': os.getenv('ORACLE_PASSWORD', ''),
+        'NAME': os.getenv('ORACLE_DESCRIPTOR', ''),
     }
 }
 DATABASE_ROUTERS = ['nmap.routers.NmpspeciesRouter']
