@@ -7,16 +7,30 @@ from django.template import Context, Template
 
 class Source(models.Model):
     # `code` is the legacy PK.
-    code = models.CharField(unique=True, max_length=64)
-    title = models.CharField(max_length=128, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    custodian = models.CharField(max_length=256, blank=True, null=True)
+    code = models.CharField(
+        unique=True, max_length=64, help_text='The unique code for this source')
+    title = models.CharField(
+        max_length=128, blank=True, null=True,
+        help_text='A brief title for the data source - appears in the web-page drop-down list')
+    description = models.TextField(
+        blank=True, null=True, help_text='A more fullsome description of the source')
+    custodian = models.CharField(
+        max_length=256, blank=True, null=True,
+        help_text='The effective custodian of this data source')
     custodian_email = models.EmailField(blank=True, null=True)
-    source_type = models.CharField(max_length=64, blank=True, null=True)
-    url = models.URLField(max_length=256, blank=True, null=True)
+    source_type = models.CharField(
+        max_length=64, blank=True, null=True,
+        help_text='Documents the source type eg species names, attribute values')
+    url = models.URLField(
+        max_length=256, blank=True, null=True,
+        help_text='The URL for metadata describing this source. It may be used as an alternative to displaying local metadata.')
     download = models.CharField(max_length=10)
-    last_processed_on = models.DateField(blank=True, null=True)
-    last_updated_on = models.DateField(blank=True, null=True)
+    last_processed_on = models.DateField(
+        blank=True, null=True,
+        help_text='The date the datasource ws last processed and updated in NatureMap')
+    last_updated_on = models.DateField(
+        blank=True, null=True,
+        help_text='The date this datasource was last updated or modified by the custodian')
     update_frequency = models.CharField(max_length=256, blank=True, null=True)
     dataset_version = models.CharField(max_length=64, blank=True, null=True)
     version_comments = models.TextField(blank=True, null=True)
@@ -48,13 +62,19 @@ class Family(models.Model):
     TODO: rename this model to something like Taxon.
     """
     # `name` is the legacy PK.
-    name = models.CharField(max_length=64)
-    order = models.CharField(max_length=64, blank=True, null=True)
-    class_name = models.CharField(max_length=64, blank=True, null=True)
-    division = models.CharField(max_length=64, blank=True, null=True)  # Equivalent to phylum.
-    kingdom_name = models.CharField(max_length=64, blank=True, null=True)
-    kingdom_description = models.CharField(max_length=256, blank=True, null=True)
-    sup_code = models.CharField(max_length=16)
+    name = models.CharField(max_length=64, help_text='Name of family')
+    order = models.CharField(
+        max_length=64, blank=True, null=True, help_text='The taxonomic order this family belongs to')
+    class_name = models.CharField(
+        max_length=64, blank=True, null=True, help_text='The taxonomic class this family belongs to')
+    division = models.CharField(
+        max_length=64, blank=True, null=True,
+        help_text='The taxonomic division this family belongs to')  # Equivalent to phylum.
+    kingdom_name = models.CharField(
+        max_length=64, blank=True, null=True, help_text='The name of this kingdom')
+    kingdom_description = models.CharField(
+        max_length=256, blank=True, null=True, help_text='A description of this kingdom')
+    sup_code = models.CharField(max_length=16, help_text='Supra-group code')
     source = models.ForeignKey(Source, on_delete=models.PROTECT)
 
     class Meta:
@@ -79,24 +99,23 @@ class Supra(models.Model):
 class Species(models.Model):
     """95% sure that these are all the unique species names.
     """
-    name = models.CharField(max_length=256)
-    source = models.ForeignKey(Source, on_delete=models.PROTECT)
-    family = models.ForeignKey(Family, on_delete=models.PROTECT)
-    supra_code = models.CharField(max_length=32, db_index=True, blank=True, null=True)
-    supra_name = models.CharField(max_length=256, blank=True, null=True)
-    genus = models.CharField(max_length=128)
-    species = models.CharField(max_length=128)
-    infraspecies_rank = models.CharField(max_length=64, blank=True, null=True)
-    infraspecies_name = models.CharField(max_length=128, blank=True, null=True)
-    author = models.CharField(max_length=512, blank=True, null=True)
-    vernacular = models.CharField(max_length=256, blank=True, null=True)
-    # Cryptic fields:
-    currency = models.BooleanField(default=True)  # 95% sure this is 'current name'.
-    informal = models.CharField(max_length=2, blank=True, null=True)
-    naturalised = models.NullBooleanField(default=None)
-    consv_code = models.CharField(max_length=4, blank=True, null=True)
-    auth_name = models.NullBooleanField(default=None)
-    name_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=256, help_text='A concatenation of genus, species, rank and infra name')
+    source = models.ForeignKey(Source, on_delete=models.PROTECT, help_text='The source of this name eg WACENSUS')
+    family = models.ForeignKey(Family, on_delete=models.PROTECT, help_text='The family this species belongs to')
+    supra_code = models.CharField(max_length=32, db_index=True, blank=True, null=True, help_text='Supra-group code')
+    supra_name = models.CharField(max_length=256, blank=True, null=True, help_text='Description of supra-group')
+    genus = models.CharField(max_length=128, help_text="The species' genus")
+    species = models.CharField(max_length=128, help_text='The specific epithet for this taxon')
+    infraspecies_rank = models.CharField(max_length=64, blank=True, null=True, help_text='The infraspecific rank of this taxon')
+    infraspecies_name = models.CharField(max_length=128, blank=True, null=True, help_text='Infraspecific name')
+    author = models.CharField(max_length=512, blank=True, null=True, help_text='The author of this taxon')
+    vernacular = models.CharField(max_length=256, blank=True, null=True, help_text='The common name for this taxon')
+    currency = models.BooleanField(default=True, help_text='A flag indicating whether this name is current.')
+    informal = models.CharField(max_length=2, blank=True, null=True, help_text='Flag indicating whether this is a published name')
+    naturalised = models.NullBooleanField(default=None, help_text='Flag indicating whether this taxon has been introduced into WA')
+    consv_code = models.CharField(max_length=4, blank=True, null=True, help_text='The conservation code for this taxon, if known.')
+    auth_name = models.NullBooleanField(default=None)  # Unclear what this field represents.
+    name_id = models.IntegerField(blank=True, null=True, help_text='The original authoritative name_id of this name. If not null this number must be unique across all records.')
     ranking = models.CharField(max_length=8, blank=True, null=True)
     legacy_pk = models.IntegerField(unique=True)
 
@@ -130,13 +149,13 @@ class SpeciesLocation(models.Model):
     name = models.CharField(max_length=512, blank=True, null=True)
     query_date = models.DateField(blank=True, null=True)
     # Site fields
-    site_name = models.CharField(max_length=512, blank=True, null=True)
-    site_source = models.ForeignKey(Source, blank=True, null=True, on_delete=models.PROTECT)
+    site_name = models.CharField(max_length=512, blank=True, null=True, help_text='The name of the site, if it has one')
+    site_source = models.ForeignKey(Source, blank=True, null=True, on_delete=models.PROTECT, help_text='The source of this site information')
     collector = models.CharField(max_length=128, blank=True, null=True)
     collector_no = models.CharField(max_length=64, blank=True, null=True)
     survey = models.CharField(max_length=128, blank=True, null=True)
     point = models.PointField(srid=4283)
-    accuracy = models.IntegerField(blank=True, null=True)
+    accuracy = models.IntegerField(blank=True, null=True, help_text='The spatial accuracy of the point (metres)')
     # Cryptic fields:
     cust_group = models.CharField(max_length=32, blank=True, null=True)
     stt_id = models.IntegerField(blank=True, null=True)
