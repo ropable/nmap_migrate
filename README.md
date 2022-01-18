@@ -29,6 +29,10 @@ The import will take some time to complete.
 
 Notes:
 
+* The `ORACLE_DESCRIPTOR` env variable will be something like
+`(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=hostname.domain)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=service.name)(SERVER=DEDICATED)))`.
+Check a current `tnsnames.ora` file.
+* The `ORACLE_PASSWORD` env var may need special characters (such as `$`) escaped with a backslash.
 * Remember to set the `LD_LIBRARY_PATH` environment variable to allow cx_Oracle
   to utilise the system Oracle client.
 * The `nmpspecies` application is the read-only generated data model allowing
