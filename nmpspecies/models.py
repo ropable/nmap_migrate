@@ -94,6 +94,8 @@ class Nmpfamilies(models.Model):
 
 
 class Nmpsites(models.Model):
+    """These are all the unique sites where species have been collected.
+    """
     sit_id = models.IntegerField(primary_key=True)
     sit_name = models.CharField(max_length=400, blank=True, null=True)
     sit_sou_code = models.ForeignKey('Nmpsources', models.DO_NOTHING, db_column='sit_sou_code')
@@ -112,6 +114,8 @@ class Nmpsites(models.Model):
 
 
 class Nmpspeciesnames(models.Model):
+    """These are all the unique species/taxa names.
+    """
     spn_id = models.IntegerField(primary_key=True)
     spn_name = models.CharField(max_length=240)
     spn_sou_code = models.ForeignKey('Nmpsources', models.DO_NOTHING, db_column='spn_sou_code')
@@ -141,6 +145,8 @@ class Nmpspeciesnames(models.Model):
 
 
 class Nmpspecies(models.Model):
+    """This is the table which links species to the sites at which they have been collected.
+    """
     objectid = models.BigIntegerField(primary_key=True)
     spe_id = models.IntegerField(unique=True, blank=True, null=True)
     spe_spn = models.ForeignKey('Nmpspeciesnames', models.DO_NOTHING, blank=True, null=True)

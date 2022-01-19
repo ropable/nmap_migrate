@@ -29,9 +29,14 @@ The import will take some time to complete.
 
 Notes:
 
+* Django 1.11.* supports PostGIS up to about v2.5, so it's easiest to run
+  a PostgreSQL 9.6/PostGIS 2.5 instance for this project.
+* The Django library might need to be patched in place in order to recognise
+  whatever gdal version is in use. It's easiest to edit the `libgeos.py` file directly
+  in the local virtualenv. Reference: https://code.djangoproject.com/ticket/17212
 * The `ORACLE_DESCRIPTOR` env variable will be something like
-`(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=hostname.domain)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=service.name)(SERVER=DEDICATED)))`.
-Check a current `tnsnames.ora` file.
+  `(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=hostname.domain)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=service.name)(SERVER=DEDICATED)))`.
+  Check a current `tnsnames.ora` file.
 * The `ORACLE_PASSWORD` env var may need special characters (such as `$`) escaped with a backslash.
 * Remember to set the `LD_LIBRARY_PATH` environment variable to allow cx_Oracle
   to utilise the system Oracle client.
