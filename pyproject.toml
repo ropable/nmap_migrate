@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "nmap_migrate"
+version = "0.1.0"
+description = ""
+authors = ["Ashley Felton <ashley@ropable.com>"]
+
+[tool.poetry.dependencies]
+python = "^2.7"
+Django = "1.11.28"
+psycopg2-binary = "2.8.4"
+cx-Oracle = "7.3.0"
+django-dotenv = "1.4.2"
+dj-database-url = "0.5.0"
+django-extensions = "2.2.9"
+
+[tool.poetry.dev-dependencies]
+ipython = "5.5.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
