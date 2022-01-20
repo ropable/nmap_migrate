@@ -1,3 +1,4 @@
+from datetime import date
 from django.contrib.gis.geos import Point
 from nmpspecies.models import (
     Nmpsources, Nmpsites, Nmpkingdoms, Nmpfamilies, Nmpsupra, Nmpspeciesnames, Nmpspecies
@@ -140,6 +141,10 @@ def import_nmap_data():
         for sp in Nmpspecies.objects.order_by('objectid')[i:i + 1000]:
             if not SpeciesLocation.objects.filter(legacy_pk=sp.objectid).exists():
                 site = Site.objects.get(legacy_pk=sp.spe_sit_id)
+                if sp.spe_coldate_dy and sp.spe_coldate_mn and sp.spe_coldate_yr:
+                    collected_date = date(int(sp.spe_coldate_yr), int(sp.spe_coldate_mn), int(sp.spe_coldate_dy))
+                else:
+                    collected_date = None
                 spl = SpeciesLocation(
                     identifier=sp.spe_id,
                     species=Species.objects.get(legacy_pk=sp.spe_spn_id),
@@ -148,6 +153,7 @@ def import_nmap_data():
                     site_source=site.source,
                     collector=sp.spe_collector,
                     collector_no=sp.spe_collector_no,
+                    collected_date=collected_date,
                     survey=sp.spe_survey,
                     point=Point((sp.spe_longitude, sp.spe_latitude), srid=4283),
                     cust_group=sp.spe_cust_group,

@@ -50,7 +50,7 @@ class SpeciesAdmin(admin.ModelAdmin):
 @admin.register(SpeciesLocation)
 class SpeciesLocationAdmin(admin.ModelAdmin):
     date_hierarchy = 'query_date'
-    list_display = ('name', 'site_name', 'collector', 'query_date', 'hide')
+    list_display = ('species', 'site_name', 'collector', 'query_date', 'hide')
     list_filter = ('hide',)
     raw_id_fields = ('species',)
     readonly_fields = ('legacy_pk',)

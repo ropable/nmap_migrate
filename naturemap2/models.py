@@ -58,9 +58,6 @@ class Kingdom(models.Model):
 
 
 class Family(models.Model):
-    """
-    TODO: rename this model to something like Taxon.
-    """
     # `name` is the legacy PK.
     name = models.CharField(max_length=64, help_text='Name of family')
     order = models.CharField(
@@ -146,13 +143,13 @@ class SpeciesLocation(models.Model):
     """
     identifier = models.IntegerField(unique=True, blank=True, null=True)
     species = models.ForeignKey(Species, on_delete=models.PROTECT)
-    name = models.CharField(max_length=512, blank=True, null=True)
     query_date = models.DateField(blank=True, null=True)
     # Site fields
     site_name = models.CharField(max_length=512, blank=True, null=True, help_text='The name of the site, if it has one')
     site_source = models.ForeignKey(Source, blank=True, null=True, on_delete=models.PROTECT, help_text='The source of this site information')
     collector = models.CharField(max_length=128, blank=True, null=True)
     collector_no = models.CharField(max_length=64, blank=True, null=True)
+    collected_date = models.DateField(blank=True, null=True)
     survey = models.CharField(max_length=128, blank=True, null=True)
     point = models.PointField(srid=4283)
     accuracy = models.IntegerField(blank=True, null=True, help_text='The spatial accuracy of the point (metres)')
@@ -167,7 +164,7 @@ class SpeciesLocation(models.Model):
     metadata = JSONField(default=dict)
 
     def __str__(self):
-        return self.name
+        return self.species.name
 
     def get_document(self):
         # Render the document field value from a template.
