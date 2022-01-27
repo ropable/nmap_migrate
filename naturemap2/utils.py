@@ -1,3 +1,4 @@
+import unicodecsv as csv
 from datetime import date
 from django.contrib.gis.geos import Point
 from nmpspecies.models import (
@@ -183,3 +184,33 @@ def import_nmap_data():
                 create_list.append(spl)
         print('Creating {} SpeciesLocation objects'.format(len(create_list)))
         SpeciesLocation.objects.bulk_create(create_list)
+
+
+def export_nmpspecies_csv():
+    """Output `nmpspecies.csv` suitable for import into the waherb/naturemap2 app.
+    Format:
+        NAME,POINT(WKT),SUPRA,FAMILY,KINGDOM,CONSERVATION_STATUS,VERNACULAR,COLLECTOR_NAME,COLLECTED_DATE,SURVEY_NAME,SOURCE_NAME
+    """
+    f = open("nmpspecies.csv", "w")
+    writer = csv.writer(f, quoting=csv.QUOTE_ALL, encoding="utf-8")
+    count = SpeciesLocation.objects.count()
+    batch = 0
+    while batch < count:
+        for i in SpeciesLocation.objects.order_by('id')[batch:batch + 1000]:
+            writer.writerow([
+                i.species.name,
+                i.point.wkt,
+                i.species.supra_name,
+                i.species.family.name,
+                i.species.family.kingdom_name,
+                i.species.consv_code,
+                i.species.vernacular,
+                i.collector,
+                i.collected_date.strftime("%d/%m/%Y") if i.collected_date else "",
+                i.survey,
+                i.site_source.title if i.site_source else "",
+            ])
+            f.flush()
+            print(i.species.name.encode("utf-8").strip())
+        batch += 1000
+    f.close()

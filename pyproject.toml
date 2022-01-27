@@ -12,6 +12,7 @@ cx-Oracle = "7.3.0"
 django-dotenv = "1.4.2"
 dj-database-url = "0.5.0"
 django-extensions = "2.2.9"
+unicodecsv = "^0.14.1"
 
 [tool.poetry.dev-dependencies]
 ipython = "5.5.0"
