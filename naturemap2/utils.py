@@ -197,6 +197,14 @@ def export_nmpspecies_csv():
     batch = 0
     while batch < count:
         for i in SpeciesLocation.objects.order_by('id')[batch:batch + 1000]:
+            if not i.collected_date:
+                collected_date = ""
+            elif i.collected_date.year < 1790:
+                collected_date = ""
+            elif i.collected_date.year < 1900:
+                collected_date = "{}-{}-{}".format(i.collected_date.year, i.collected_date.month, i.collected_date.day)
+            else:
+                collected_date = i.collected_date.strftime("%Y-%m-%d")
             writer.writerow([
                 i.species.name,
                 i.point.wkt,
@@ -206,11 +214,11 @@ def export_nmpspecies_csv():
                 i.species.consv_code,
                 i.species.vernacular,
                 i.collector,
-                i.collected_date.strftime("%d/%m/%Y") if i.collected_date else "",
+                collected_date,
                 i.survey,
                 i.site_source.title if i.site_source else "",
             ])
             f.flush()
-            print(i.species.name.encode("utf-8").strip())
+            # print(i.species.name.encode("utf-8").strip())
         batch += 1000
     f.close()
